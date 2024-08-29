@@ -1,0 +1,6 @@
+.env
+__pycache__
+simple.py
+sample.log
+employee.py
+employee.log
