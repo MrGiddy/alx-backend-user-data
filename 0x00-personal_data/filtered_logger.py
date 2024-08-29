@@ -59,6 +59,26 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
     return conn
 
 
+def main() -> None:
+    """displays filtered/redacted user data"""
+    # obtain a database connection using get_db
+    connection = get_db()
+    with connection.cursor() as cursor:
+        # retrieve all cols names and rows in the users table
+        query = 'SELECT * FROM users;'
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        columns = cursor.column_names
+        # display each row with PII obfuscated
+        logger = get_logger()
+        paired = []
+        for row in rows:
+            for k, v in zip(columns, row):
+                paired.append(f'{k}={v}')
+            message = ';'.join(paired) + ';'
+            logger.info(message)
+
+
 class RedactingFormatter(logging.Formatter):
     """ Redacting Formatter class """
 
@@ -75,3 +95,7 @@ class RedactingFormatter(logging.Formatter):
         """reduct values in incoming log record(s)"""
         msg = super(RedactingFormatter, self).format(record)
         return filter_datum(self.fields, self.REDACTION, msg, self.SEPARATOR)
+
+
+if __name__ == '__main__':
+    main()
