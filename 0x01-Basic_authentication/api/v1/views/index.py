@@ -33,3 +33,12 @@ def raise_401() -> None:
       - 401 unauthorized error
     """
     abort(401)
+
+
+@app_views.route('/forbidden/', strict_slashes=False)
+def raise_403() -> None:
+    """GET /api/v1/forbidden
+    Raise:
+      - 403 forbidden error
+    """
+    abort(403)
