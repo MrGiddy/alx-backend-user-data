@@ -26,5 +26,5 @@ class Auth():
         return request.headers.get('Authorization', None)
 
     def current_user(self, request=None) -> TypeVar('User'):
-        """current user method"""
+        """to be overloaded to retrieve the user instance for a request"""
         return None

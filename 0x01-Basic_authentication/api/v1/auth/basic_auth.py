@@ -35,8 +35,8 @@ class BasicAuth(Auth):
         if decoded_base64_authorization_header:
             if isinstance(decoded_base64_authorization_header, str):
                 if ':' in decoded_base64_authorization_header:
-                    uname, pwd = decoded_base64_authorization_header.split(':')
-                    return (uname, pwd)
+                    email, pwd = decoded_base64_authorization_header.split(':')
+                    return (email, pwd)
         return (None, None)
 
     def user_object_from_credentials(
@@ -51,3 +51,12 @@ class BasicAuth(Auth):
                     return None
                 if users[0].is_valid_password(user_pwd):
                     return users[0]
+
+    def current_user(self, request=None) -> TypeVar('User'):
+        """retrieves the User instance for a request"""
+        auth_header = self.authorization_header(request)
+        b64_encoded = self.extract_base64_authorization_header(auth_header)
+        email_pwd_string = self.decode_base64_authorization_header(b64_encoded)
+        email, pwd = self.extract_user_credentials(email_pwd_string)
+        user_obj = self.user_object_from_credentials(email, pwd)
+        return user_obj
