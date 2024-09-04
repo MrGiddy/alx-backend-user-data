@@ -8,16 +8,22 @@ class Auth():
     """Auth class"""
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
         """checks if a resource requires authentication to access"""
-        if not path or not excluded_paths or len(excluded_paths) == 0:
-            return True
+        if path and excluded_paths:
+            if not path.strip().endswith('/'):
+                path = path + '/'
 
-        if not path.endswith('/'):
-            path = path + '/'
+            for p in excluded_paths:
+                p = p.strip()
 
-        if path in excluded_paths:
-            return False
-        else:
-            return True
+                if p.endswith('*') and path.startswith(p[:-1]):
+                    return False
+
+                if not p.endswith('/'):
+                    p = p + '/'
+
+                if p == path:
+                    return False
+        return True
 
     def authorization_header(self, request=None) -> str:
         """get value of authorization header"""
