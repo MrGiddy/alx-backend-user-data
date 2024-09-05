@@ -3,8 +3,7 @@
 from os import getenv
 from typing import Tuple, Union
 from api.v1.views import app_views
-from flask import request, jsonify, make_response
-
+from flask import request, jsonify, make_response, abort
 from models.user import User
 
 
@@ -35,3 +34,16 @@ def login() -> Union[str, Tuple[str, int]]:
     response = make_response(user[0].to_json())
     response.set_cookie(getenv('SESSION_NAME'), session_id)
     return response
+
+
+@app_views.route(
+        '/auth_session/logout', methods=['DELETE'], strict_slashes=False)
+def logout() -> Tuple[str, int]:
+    """Logs out a user"""
+    from api.v1.app import auth
+
+    destroyed = auth.destroy_session(request)
+    if not destroyed:
+        abort(404)
+
+    return jsonify({}), 200
