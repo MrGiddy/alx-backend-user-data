@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """Auth module"""
+from os import getenv
+import os
 from typing import List, TypeVar
 from flask import request
 
@@ -34,3 +36,10 @@ class Auth():
     def current_user(self, request=None) -> TypeVar('User'):
         """to be overloaded to retrieve the user instance for a request"""
         return None
+
+    def session_cookie(self, request=None) -> str:
+        """returns a cookie value from a request"""
+        if not request:
+            return
+        cookie_name = getenv('SESSION_NAME')
+        return request.cookies.get(cookie_name)
