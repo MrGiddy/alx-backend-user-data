@@ -38,11 +38,12 @@ def authenticate_user() -> None:
     require_auth = auth.require_auth(request.path, excluded_paths)
     if require_auth:
         auth_header = auth.authorization_header(request)
-        current_user = auth.current_user(request)
         if not auth_header:
             abort(401)
+        current_user = auth.current_user(request)
         if not current_user:
             abort(403)
+        request.current_user = current_user
 
 
 @app.errorhandler(404)
