@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """DB module"""
-from sqlalchemy import create_engine
+from typing import Dict
+from sqlalchemy import create_engine, tuple_
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
@@ -40,17 +41,19 @@ class DB():
             user = None
         return user
 
-    def find_user_by(self, **kwargs):
+    def find_user_by(self, **kwargs: Dict) -> User:
         """Finds a user in the database using a given keyword arg(s)"""
-        valid_attrs = {}
+        fields = []
+        values = []
         for k, v in kwargs.items():
             if hasattr(User, k):
-                valid_attrs[k] = v
+                fields.append(getattr(User, k))
+                values.append(v)
             else:
                 raise InvalidRequestError()
-
         sesh = self._session
-        user = sesh.query(User).filter_by(**kwargs).first()
+        user = sesh.query(User).filter(
+            tuple_(*fields).in_([tuple(values)])).first()
         if not user:
             raise NoResultFound()
         return user
