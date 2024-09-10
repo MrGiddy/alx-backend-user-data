@@ -45,10 +45,29 @@ class DB():
             if hasattr(User, k):
                 valid_attrs[k] = v
             else:
-                raise InvalidRequestError
+                raise InvalidRequestError()
 
         sesh = self._session
         user = sesh.query(User).filter_by(**kwargs).first()
         if not user:
-            raise NoResultFound
+            raise NoResultFound()
         return user
+
+    def update_user(self, user_id, **kwargs):
+        """Updates a user's details in the database"""
+        user = self.find_user_by(id=user_id)
+        if not user:
+            return
+
+        valid_attrs = {}
+        for k, v in kwargs.items():
+            if hasattr(User, k):
+                valid_attrs[k] = v
+            else:
+                raise ValueError()
+
+        sesh = self._session
+        query = sesh.query(User).filter(User.id == user_id)
+        query.update(valid_attrs)
+
+        sesh.commit()
