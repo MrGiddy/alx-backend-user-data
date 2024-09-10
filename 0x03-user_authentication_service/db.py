@@ -27,15 +27,16 @@ class DB():
             self.__session = DBSession()
         return self.__session
 
-    def add_user(self, email, hashed_password):
+    def add_user(self, email: str, hashed_password: str) -> User:
         """Create a user and save to database"""
-        user = User(email=email, hashed_password=hashed_password)
-
-        sesh = self._session
-        sesh.add(user)
-        sesh.commit()
-
-        sesh.refresh(user)
+        try:
+            user = User(email=email, hashed_password=hashed_password)
+            sesh = self._session
+            sesh.add(user)
+            sesh.commit()
+        except Exception:
+            sesh.rollback()
+            user = None
         return user
 
     def find_user_by(self, **kwargs):
