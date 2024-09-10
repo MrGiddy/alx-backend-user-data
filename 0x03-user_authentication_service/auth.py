@@ -44,3 +44,13 @@ class Auth:
                 password.encode('utf-8'), user.hashed_password)
         except NoResultFound:
             return False
+
+    def create_session(self, email: str) -> str:
+        """ creates a user session """
+        new_sesh_id = _generate_uuid()
+        try:
+            user = self._db.find_user_by(email=email)
+            self._db.update_user(user.id, session_id=new_sesh_id)
+            return new_sesh_id
+        except NoResultFound:
+            return
