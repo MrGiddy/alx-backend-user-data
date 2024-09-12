@@ -58,7 +58,7 @@ class DB():
             raise NoResultFound()
         return user
 
-    def update_user(self, user_id, **kwargs):
+    def update_user(self, user_id: int, **kwargs) -> None:
         """Updates a user's details in the database"""
         user = self.find_user_by(id=user_id)
         if not user:
@@ -67,12 +67,12 @@ class DB():
         valid_attrs = {}
         for k, v in kwargs.items():
             if hasattr(User, k):
-                valid_attrs[k] = v
+                valid_attrs[getattr(User, k)] = v
             else:
                 raise ValueError()
 
         sesh = self._session
         query = sesh.query(User).filter(User.id == user_id)
-        query.update(valid_attrs)
+        query.update(valid_attrs, synchronize_session=False)
 
         sesh.commit()
