@@ -41,7 +41,7 @@ class DB():
             user = None
         return user
 
-    def find_user_by(self, **kwargs: Dict) -> User:
+    def find_user_by(self, **kwargs) -> User:
         """Finds a user in the database using a given keyword arg(s)"""
         fields = []
         values = []
